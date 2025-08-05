@@ -41,16 +41,18 @@ const Index = () => {
         const data = await response.json();
         incrementSearch();
         
-        // Check if we get an actual answer or just a confirmation
+        // Display the webhook response
         if (data.answer) {
           setAnswer(data.answer);
+        } else if (data.message) {
+          setAnswer(data.message);
         } else {
-          setAnswer("NOVA is processing your question... The answer will appear here soon! 🚀");
+          setAnswer(JSON.stringify(data, null, 2));
         }
         
         toast({
-          title: "Question Sent! 🚀",
-          description: "NOVA is thinking about your question...",
+          title: "Response Received! 🚀",
+          description: "NOVA has processed your question.",
         });
       } else {
         setAnswer("Sorry, I couldn't process your question. Please try again! 😅");
@@ -117,7 +119,7 @@ const Index = () => {
             <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <div className="text-2xl">🤖</div>
-                <h3 className="text-xl font-bold text-primary">NOVA's Answer</h3>
+                <h3 className="text-xl font-bold text-primary">Here is your Answer</h3>
               </div>
               
               {isLoading ? (
