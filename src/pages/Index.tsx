@@ -41,9 +41,19 @@ const Index = () => {
         const data = await response.json();
         incrementSearch();
         
-        // Display only the output field value
+        // Display only the output field value, stripped of HTML
         if (data.output) {
-          setAnswer(data.output);
+          // Strip HTML tags and decode HTML entities
+          const cleanText = data.output
+            .replace(/<[^>]*>/g, '') // Remove HTML tags
+            .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+            .replace(/&amp;/g, '&') // Replace &amp; with &
+            .replace(/&lt;/g, '<') // Replace &lt; with <
+            .replace(/&gt;/g, '>') // Replace &gt; with >
+            .replace(/&quot;/g, '"') // Replace &quot; with "
+            .replace(/&#39;/g, "'") // Replace &#39; with '
+            .trim(); // Remove extra whitespace
+          setAnswer(cleanText);
         } else {
           setAnswer("No output received from NOVA. Please try again.");
         }
