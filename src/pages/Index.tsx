@@ -41,13 +41,11 @@ const Index = () => {
         const data = await response.json();
         incrementSearch();
         
-        // Display the webhook response
-        if (data.answer) {
-          setAnswer(data.answer);
-        } else if (data.message) {
-          setAnswer(data.message);
+        // Display only the output field value
+        if (data.output) {
+          setAnswer(data.output);
         } else {
-          setAnswer(JSON.stringify(data, null, 2));
+          setAnswer("No output received from NOVA. Please try again.");
         }
         
         toast({
