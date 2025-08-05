@@ -12,11 +12,15 @@ const WEBHOOK_URL = "https://ignatius1325.app.n8n.cloud/webhook-test/a0f7747a-36
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [answer, setAnswer] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
   const { level, searches, streak, badges, incrementSearch, resetProgress } = useGameProgress();
   const { toast } = useToast();
 
   const handleSearch = async (query: string) => {
     setIsLoading(true);
+    setAnswer("");
+    setHasSearched(true);
     
     try {
       const response = await fetch(WEBHOOK_URL, {
@@ -34,12 +38,22 @@ const Index = () => {
       });
 
       if (response.ok) {
+        const data = await response.json();
         incrementSearch();
+        
+        // Check if we get an actual answer or just a confirmation
+        if (data.answer) {
+          setAnswer(data.answer);
+        } else {
+          setAnswer("NOVA is processing your question... The answer will appear here soon! 🚀");
+        }
+        
         toast({
           title: "Question Sent! 🚀",
           description: "NOVA is thinking about your question...",
         });
       } else {
+        setAnswer("Sorry, I couldn't process your question. Please try again! 😅");
         toast({
           title: "Oops! Something went wrong",
           description: "Please try asking your question again.",
@@ -48,6 +62,7 @@ const Index = () => {
       }
     } catch (error) {
       console.error("Error sending question:", error);
+      setAnswer("Connection error! Please check your internet and try again. 🌐");
       toast({
         title: "Connection Error",
         description: "Unable to reach NOVA. Please check your connection.",
@@ -95,6 +110,31 @@ const Index = () => {
 
         {/* Search Box */}
         <SearchBox onSearch={handleSearch} isLoading={isLoading} />
+
+        {/* Answer Section */}
+        {hasSearched && (
+          <div className="mt-8 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="text-2xl">🤖</div>
+                <h3 className="text-xl font-bold text-primary">NOVA's Answer</h3>
+              </div>
+              
+              {isLoading ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <p className="text-muted-foreground">NOVA is thinking about your question...</p>
+                </div>
+              ) : (
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">
+                    {answer}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Reset Button (for development/testing) */}
         <div className="flex justify-center mt-8">
