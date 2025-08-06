@@ -41,9 +41,9 @@ const Index = () => {
         const data = await response.json();
         incrementSearch();
         
-        // Display only the output field value, stripped of HTML
+        // Display only the output field value, stripped of HTML and markdown
         if (data.output) {
-          // Strip HTML tags and decode HTML entities
+          // Strip HTML tags, decode HTML entities, and remove markdown formatting
           const cleanText = data.output
             .replace(/<[^>]*>/g, '') // Remove HTML tags
             .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
@@ -52,6 +52,13 @@ const Index = () => {
             .replace(/&gt;/g, '>') // Replace &gt; with >
             .replace(/&quot;/g, '"') // Replace &quot; with "
             .replace(/&#39;/g, "'") // Replace &#39; with '
+            .replace(/\*+/g, '') // Remove asterisks (markdown bold/italic)
+            .replace(/^\s*[\*\-\+]\s+/gm, '') // Remove bullet points at start of lines
+            .replace(/^\s*\d+\.\s+/gm, '') // Remove numbered list markers
+            .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove markdown links, keep text
+            .replace(/`([^`]+)`/g, '$1') // Remove code backticks, keep text
+            .replace(/#{1,6}\s*/g, '') // Remove markdown headers
+            .replace(/\s+/g, ' ') // Replace multiple spaces with single space
             .trim(); // Remove extra whitespace
           setAnswer(cleanText);
         } else {
