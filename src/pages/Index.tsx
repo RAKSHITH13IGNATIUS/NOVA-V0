@@ -127,10 +127,10 @@ const Index = () => {
         {/* Welcome Section */}
         <div className="text-center mb-8">
           <div className="comic-panel bg-gradient-to-br from-accent/20 to-primary/20 border-accent/40 p-8 mx-4">
-            <h1 className="text-6xl md:text-8xl font-black mb-4 transform -rotate-1 text-primary drop-shadow-lg comic-text">
+            <h1 className="text-6xl md:text-8xl font-black mb-4 text-primary drop-shadow-lg comic-text">
               🚀 NOVA 🎮
             </h1>
-            <p className="text-3xl font-black text-secondary transform rotate-1 comic-text">
+            <p className="text-3xl font-black text-secondary comic-text">
               ASK! LEARN! WIN! 🏆
             </p>
           </div>
@@ -153,7 +153,7 @@ const Index = () => {
             <div className="speech-bubble mx-4">
               <div className="flex items-center gap-3 mb-6">
                 <div className="text-4xl">🤖</div>
-                <h3 className="text-2xl font-black text-primary transform -rotate-1 comic-text">NOVA Says:</h3>
+                <h3 className="text-2xl font-black text-primary comic-text">NOVA Says:</h3>
               </div>
               
               {isLoading ? (

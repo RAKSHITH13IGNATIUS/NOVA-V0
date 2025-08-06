@@ -115,7 +115,7 @@
 /* Comic book style components */
 @layer components {
   .comic-panel {
-    @apply bg-gradient-to-br from-card to-card/80 border-4 border-primary/30 rounded-3xl shadow-[8px_8px_0px_0px] shadow-primary/20 transform rotate-1;
+    @apply bg-gradient-to-br from-card to-card/80 border-4 border-primary/30 rounded-3xl shadow-[8px_8px_0px_0px] shadow-primary/20;
   }
   
   .speech-bubble {
@@ -128,7 +128,7 @@
   }
   
   .comic-button {
-    @apply bg-primary text-primary-foreground border-4 border-primary-hover rounded-xl px-6 py-3 font-black text-lg shadow-[4px_4px_0px_0px] shadow-primary-hover transform transition-all duration-200 hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px] hover:shadow-primary-hover;
+    @apply bg-primary text-primary-foreground border-4 border-primary-hover rounded-xl px-6 py-3 font-black text-lg shadow-[4px_4px_0px_0px] shadow-primary-hover transition-all duration-200 hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px] hover:shadow-primary-hover;
   }
   
   .achievement-glow {
