@@ -10,3 +10,4 @@ The main objectives are:
 
 tech-stack -react,typescript , gemini-flash-1.5, n8n 
 <img width="1266" height="703" alt="Screenshot 2025-08-08 040124" src="https://github.com/user-attachments/assets/0c64eb6c-9f61-46f7-bd3e-b4726e20bc40" />
+ 
