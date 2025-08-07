@@ -58,32 +58,41 @@ const Index = () => {
           }
         }, 100);
         
-        // Display only the output field value, formatted as bullet points
+        // Display webhook output preserving original points/structure, remove JSON/HTML/markup
         if (data.output) {
-          // Clean and format text as bullet points
-          let cleanText = data.output
+          // Clean and format while keeping original line structure
+          let text = String(data.output)
+            .replace(/```[\s\S]*?```/g, '') // Remove fenced code blocks
             .replace(/<[^>]*>/g, '') // Remove HTML tags
-            .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
-            .replace(/&amp;/g, '&') // Replace &amp; with &
-            .replace(/&lt;/g, '<') // Replace &lt; with <
-            .replace(/&gt;/g, '>') // Replace &gt; with >
-            .replace(/&quot;/g, '"') // Replace &quot; with "
-            .replace(/&#39;/g, "'") // Replace &#39; with '
-            .replace(/\*+/g, '') // Remove asterisks (markdown bold/italic)
-            .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove markdown links, keep text
-            .replace(/`([^`]+)`/g, '$1') // Remove code backticks, keep text
-            .replace(/#{1,6}\s*/g, '') // Remove markdown headers
-            .trim(); // Remove extra whitespace
-          
-          // Split into sentences and create bullet points
-          const sentences = cleanText
-            .split(/[.!?]+/)
-            .map(s => s.trim())
-            .filter(s => s.length > 10); // Only keep substantial sentences
-          
-          setAnswer(sentences);
+            .replace(/&nbsp;/g, ' ') // Decode entities
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/`([^`]+)`/g, '$1'); // Remove inline code backticks
+
+          // Split by lines, drop JSON-like content and empty lines
+          const lines = text
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l.length > 0)
+            .filter(l => !/^(\{|\[|\}|\])/.test(l)) // drop obvious JSON blocks
+            .filter(l => !/["']\s*:/.test(l)); // drop key:value JSON-ish lines
+
+          // Normalize bullets/numbers; render as clean points
+          const points = lines
+            .map(l => l
+              .replace(/^[-*•]\s+/, '') // strip bullet markers
+              .replace(/^\d+\.\s+/, '') // strip numbered list prefixes
+              .replace(/^#{1,6}\s*/, '') // strip markdown headers
+              .replace(/^>\s*/, '') // strip blockquotes
+              .trim())
+            .filter(l => l.length > 1);
+
+          setAnswer(points.length ? points : ["No clear content in response. Please try again."]);
         } else {
-          setAnswer(["No output received from NOVA. Please try again."]);
+          setAnswer(["No output received from NOVA. Please try again."]); 
         }
         
         toast({
