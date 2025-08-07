@@ -7,7 +7,8 @@ import useGameProgress from "@/hooks/useGameProgress";
 import { useToast } from "@/hooks/use-toast";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import ReactMarkdown from "react-markdown";
+ 
 const WEBHOOK_URL = "https://ignatius1325.app.n8n.cloud/webhook-test/a0f7747a-36f0-49cd-a820-27bf8228e192";
 
 const Index = () => {
@@ -58,7 +59,7 @@ const Index = () => {
           }
         }, 100);
         
-        // Display webhook output preserving original structure; remove JSON/HTML/markup only
+        // Display webhook output: keep main content as clean bullet points; remove JSON/HTML
         if (data.output) {
           let text = String(data.output)
             .replace(/```[\s\S]*?```/g, '') // Remove fenced code blocks
@@ -70,15 +71,31 @@ const Index = () => {
             .replace(/&quot;/g, '"')
             .replace(/&#39;/g, "'");
 
-          // Keep original lines and formatting; drop obvious JSON-only lines
-          const lines = text
-            .split(/\r?\n/)
-            .map(l => l.trimEnd()) // preserve leading bullets/dashes and spacing
-            .filter(l => l.trim().length > 0)
-            .filter(l => !/^(\{|\[|\}|\])/.test(l.trim())) // drop JSON block braces
-            .filter(l => !/["']\s*:/.test(l)); // drop key:value JSON-ish lines
+          const rawLines = text.split(/\r?\n/);
+          const items: string[] = [];
+          let currentIndex = -1;
 
-          setAnswer(lines.length ? lines : ["No clear content in response. Please try again."]); 
+          for (let l of rawLines) {
+            const trimmed = l.trim();
+            if (!trimmed) continue;
+            if (/^(\{|\[|\}|\])/.test(trimmed)) continue; // drop JSON braces
+            if (/["']\s*:/.test(trimmed)) continue; // drop key:value JSON-ish lines
+
+            // New bullet
+            if (/^\s*(?:[-*•]|\d+\.)\s+/.test(trimmed)) {
+              const content = trimmed.replace(/^\s*(?:[-*•]|\d+\.)\s+/, '');
+              items.push(content);
+              currentIndex = items.length - 1;
+              continue;
+            }
+
+            // Continuation of the previous bullet (merge lines)
+            if (currentIndex >= 0 && !/^#{1,6}\s*/.test(trimmed)) {
+              items[currentIndex] = `${items[currentIndex]} ${trimmed}`.trim();
+            }
+          }
+
+          setAnswer(items.length ? items : ["No clear content in response. Please try again."]); 
         } else {
           setAnswer(["No output received from NOVA. Please try again."]); 
         }
@@ -159,9 +176,9 @@ const Index = () => {
                   <p className="text-muted-foreground comic-text">NOVA is thinking...</p>
                 </div>
               ) : (
-                <pre className="whitespace-pre-wrap text-foreground leading-relaxed font-mono text-base">
-                  {answer.join('\n')}
-                </pre>
+                <ReactMarkdown className="text-foreground leading-relaxed">
+                  {answer.map(item => `- ${item}`).join('\n')}
+                </ReactMarkdown>
               )}
             </div>
           </div>
