@@ -58,9 +58,8 @@ const Index = () => {
           }
         }, 100);
         
-        // Display webhook output preserving original points/structure, remove JSON/HTML/markup
+        // Display webhook output preserving original structure; remove JSON/HTML/markup only
         if (data.output) {
-          // Clean and format while keeping original line structure
           let text = String(data.output)
             .replace(/```[\s\S]*?```/g, '') // Remove fenced code blocks
             .replace(/<[^>]*>/g, '') // Remove HTML tags
@@ -69,28 +68,17 @@ const Index = () => {
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
-            .replace(/&#39;/g, "'")
-            .replace(/`([^`]+)`/g, '$1'); // Remove inline code backticks
+            .replace(/&#39;/g, "'");
 
-          // Split by lines, drop JSON-like content and empty lines
+          // Keep original lines and formatting; drop obvious JSON-only lines
           const lines = text
             .split(/\r?\n/)
-            .map(l => l.trim())
-            .filter(l => l.length > 0)
-            .filter(l => !/^(\{|\[|\}|\])/.test(l)) // drop obvious JSON blocks
+            .map(l => l.trimEnd()) // preserve leading bullets/dashes and spacing
+            .filter(l => l.trim().length > 0)
+            .filter(l => !/^(\{|\[|\}|\])/.test(l.trim())) // drop JSON block braces
             .filter(l => !/["']\s*:/.test(l)); // drop key:value JSON-ish lines
 
-          // Normalize bullets/numbers; render as clean points
-          const points = lines
-            .map(l => l
-              .replace(/^[-*•]\s+/, '') // strip bullet markers
-              .replace(/^\d+\.\s+/, '') // strip numbered list prefixes
-              .replace(/^#{1,6}\s*/, '') // strip markdown headers
-              .replace(/^>\s*/, '') // strip blockquotes
-              .trim())
-            .filter(l => l.length > 1);
-
-          setAnswer(points.length ? points : ["No clear content in response. Please try again."]);
+          setAnswer(lines.length ? lines : ["No clear content in response. Please try again."]); 
         } else {
           setAnswer(["No output received from NOVA. Please try again."]); 
         }
@@ -171,16 +159,9 @@ const Index = () => {
                   <p className="text-muted-foreground comic-text">NOVA is thinking...</p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {answer.map((point, index) => (
-                    <div key={index} className="bullet-point">
-                      <div className="text-primary font-black text-xl">•</div>
-                      <p className="text-foreground leading-relaxed flex-1">
-                        {point}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <pre className="whitespace-pre-wrap text-foreground leading-relaxed font-mono text-base">
+                  {answer.join('\n')}
+                </pre>
               )}
             </div>
           </div>
