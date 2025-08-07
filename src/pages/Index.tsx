@@ -9,7 +9,7 @@ import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
  
-const WEBHOOK_URL = "https://ignatius1325.app.n8n.cloud/webhook-test/a0f7747a-36f0-49cd-a820-27bf8228e192";
+const WEBHOOK_URL = "https://ignatius1325.app.n8n.cloud/webhook/a0f7747a-36f0-49cd-a820-27bf8228e192";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
