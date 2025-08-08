@@ -1,4 +1,4 @@
-import { Trophy, Zap, Target, Star } from "lucide-react";
+ import { Trophy, Zap, Target, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 interface GameStatsProps {
